@@ -1,21 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
   const targetUrlInput = document.getElementById('targetUrl');
-  const apiKeyInput = document.getElementById('apiKey');
+  const targetParamsInput = document.getElementById('targetParams');
   const saveButton = document.getElementById('save');
   const closeButton = document.getElementById('close');
 
   // Werte aus chrome.storage laden
-  chrome.storage.local.get(['targetUrl', 'apiKey'], (result) => {
+  chrome.storage.local.get(['targetUrl', 'targetParams'], (result) => {
     if (result.targetUrl) targetUrlInput.value = result.targetUrl;
-    if (result.apiKey) apiKeyInput.value = result.apiKey;
+    if (result.targetParams) targetParamsInput.value = result.targetParams;
   });
 
   // Speichern-Button-Handler
   saveButton.addEventListener('click', () => {
     const targetUrl = targetUrlInput.value;
-    const apiKey = apiKeyInput.value;
+    const targetParams = targetParamsInput.value;
 
-    chrome.storage.local.set({ targetUrl, apiKey }, () => {
+    chrome.storage.local.set({ targetUrl, targetParams }, () => {
       console.log('Configuration saved');
       window.close();
     });

@@ -7,14 +7,13 @@
     "contextMenus",
     "storage",
     "activeTab",
-    "scripting",
     "notifications"
   ],
   "background": {
     "service_worker": "background.js"
   },
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "options.html",
     "default_icon": {
       "16": "icon.png",
       "48": "icon.png",
@@ -25,5 +24,6 @@
     "16": "icon.png",
     "48": "icon.png",
     "128": "icon.png"
-  }
+  },
+  "options_page": "options.html"
 }
