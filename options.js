@@ -6,8 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Werte aus chrome.storage laden
   chrome.storage.local.get(['targetUrl', 'targetParams'], (result) => {
-    if (result.targetUrl) targetUrlInput.value = result.targetUrl;
-    if (result.targetParams) targetParamsInput.value = result.targetParams;
+    if (result.targetUrl) targetUrlInput.value = result.targetUrl?.trim() || "http://localhost:5000/api/execute";
+    if (result.targetParams) targetParamsInput.value = result.targetParams?.trim() || "command=create_entities";
   });
 
   // Speichern-Button-Handler
