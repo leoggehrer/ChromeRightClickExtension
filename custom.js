@@ -9,9 +9,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   targetParamsInput.value = "command=create_entities";
 
   // Werte aus chrome.storage laden
-  chrome.storage.local.get(['targetUrl', 'targetParams'], (result) => {
-    if (result.targetUrl) targetUrlInput.value = result.targetUrl?.trim() || targetUrlInput.value; ;
-    if (result.targetParams) targetParamsInput.value = result.targetParams?.trim() || targetParamsInput.value;
+  chrome.storage.local.get(['customTargetUrl', 'customTargetParams'], (result) => {
+    if (result.customTargetUrl) targetUrlInput.value = result.customTargetUrl?.trim() || targetUrlInput.value; ;
+    if (result.customTargetParams) targetParamsInput.value = result.customTargetParams?.trim() || targetParamsInput.value;
   });
 
   // read clipboard
@@ -43,7 +43,14 @@ document.addEventListener('DOMContentLoaded', async () => {
           alert('Error: ' + chrome.runtime.lastError.message);
           return;
         }
-        window.close();
+
+      const customTargetUrl = targetUrl;
+      const customTargetParams = targetParams;
+      
+       chrome.storage.local.set({ customTargetUrl, customTargetParams }, () => {
+          console.log('Configuration saved');
+          window.close();
+        });
       }
     );
   });
