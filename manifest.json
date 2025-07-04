@@ -1,31 +1,34 @@
 {
-  "manifest_version": 3,
-  "name": "MCP Server",
-  "version": "1.1",
-  "description": "Send selected text to a local MCP server via right-click with configurable settings",
-  "permissions": [
-    "contextMenus",
-    "storage",
-    "notifications",
-    "clipboardRead",
-    "activeTab",
-    "scripting"
-  ],
-  "background": {
-    "service_worker": "background.js"
-  },
-  "action": {
-    "default_popup": "options.html",
-    "default_icon": {
-      "16": "icon.png",
-      "48": "icon.png",
-      "128": "icon.png"
-    }
-  },
-  "icons": {
-    "16": "icon.png",
-    "48": "icon.png",
-    "128": "icon.png"
-  },
-  "options_page": "options.html"
+    "manifest_version": 3,
+    "name": "MCP Server",
+    "version": "1.1",
+    "description": "Send selected text to a local MCP server via right-click with configurable settings",
+    "permissions": [
+        "contextMenus",
+        "storage",
+        "activeTab",
+        "clipboardRead",
+        "scripting",
+        "notifications"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "action": {
+        "default_popup": "options.html",
+        "default_icon": {
+            "16": "icon.png",
+            "48": "icon.png",
+            "128": "icon.png"
+        }
+    },
+    "icons": {
+        "16": "icon.png",
+        "48": "icon.png",
+        "128": "icon.png"
+    },
+    "options_page": "options.html",
+    "host_permissions": [
+        "<all_urls>"
+    ]
 }

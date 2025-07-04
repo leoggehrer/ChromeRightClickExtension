@@ -1,9 +1,64 @@
-// Create context menu on installation
-chrome.runtime.onInstalled.addListener(() => {
 
+function sendToMcp({ content, targetUrl, targetParams, sourceUrl = "" }) {
+  if (!targetUrl || !/^https?:\/\//.test(targetUrl)) {
+    chrome.notifications.create({
+      type: "basic",
+      iconUrl: "icon.png",
+      title: "Invalid Target URL",
+      message: "Please provide a valid target URL."
+    });
+    return;
+  }
+
+  const payload = {
+    SourceUrl: sourceUrl,
+    TargetParams: targetParams,
+    Payload: {
+      type: "clipboard",
+      data: content,
+      description: "Send clipboard text"
+    }
+  };
+
+  fetch(targetUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  })
+    .then(response => {
+      if (!response.ok) throw new Error(`Server responded with ${response.status}`);
+      return response.json();
+    })
+    .then(() => {
+      chrome.notifications.create({
+        type: "basic",
+        iconUrl: "icon.png",
+        title: "Transfer successful",
+        message: `Clipboard content sent to ${targetUrl}`
+      });
+    })
+    .catch(error => {
+      chrome.notifications.create({
+        type: "basic",
+        iconUrl: "icon.png",
+        title: "Error sending data",
+        message: `Error: ${error.message}`
+      });
+    });
+}
+
+chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: "sendClipboardToMcp",
     title: "➡️ Send Clipboard to MCP",
+    contexts: ["all"]
+  });
+
+  chrome.contextMenus.create({
+    id: "customEntry",
+    title: "➡️ Customized send Clipboard to MCP",
     contexts: ["all"]
   });
 
@@ -14,7 +69,6 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-// Handle context menu click
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === "openOptions") {
     chrome.windows.create({
@@ -24,92 +78,75 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
       height: 300
     });
   }
+
   else if (info.menuItemId === "sendClipboardToMcp") {
-    chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      func: () => navigator.clipboard.readText()
-    }, (results) => {
-      if (chrome.runtime.lastError || !results || !results[0] || !results[0].result) {
-        chrome.notifications.create({
-          type: "basic",
-          iconUrl: "icon.png",
-          title: "Clipboard Error",
-          message: chrome.runtime.lastError?.message || "Failed to read clipboard."
-        });
-        return;
-      }
+    chrome.scripting.executeScript(
+      {
+        target: { tabId: tab.id },
+        func: () => navigator.clipboard.readText()
+      },
+      (injectionResults) => {
 
-      const clipboardText = results[0].result;
-      const currentTabUrl = tab.url || "";
-
-      if (!clipboardText.trim()) {
-        chrome.notifications.create({
-          type: "basic",
-          iconUrl: "icon.png",
-          title: "Clipboard is empty",
-          message: "Please copy something before using this option."
-        });
-        return;
-      }
-      
-      chrome.storage.local.get(["targetUrl", "targetParams"], (data) => {
-        const targetUrl = data.targetUrl?.trim() || "http://localhost:5000/api/execute";
-        const targetParams = data.targetParams?.trim() || "command=create_entities";
-
-        // Validate target URL
-        if (!targetUrl || !/^https?:\/\//.test(targetUrl)) {
+        if (
+          chrome.runtime.lastError ||
+          !injectionResults ||
+          !injectionResults[0] ||
+          !injectionResults[0].result) {
           chrome.notifications.create({
             type: "basic",
             iconUrl: "icon.png",
-            title: "Missing or Invalid Target URL",
-            message: "Please set a valid target URL in the extension settings."
+            title: "Clipboard Error",
+            message: chrome.runtime.lastError?.message || "Failed to read clipboard."
           });
           return;
         }
 
-        // Prepare JSON payload
-        const payload = {
-          SourceUrl: currentTabUrl,
-          TargetParams: targetParams,
-          Payload: {
-            type: "clipboard",
-            data: clipboardText,
-            description: "Send clipboard text"
-          }
-        };
+        const clipboardText = injectionResults[0].result;
 
-        // Send POST request to REST server
-        fetch(targetUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error(`Server responded with ${response.status}`);
-            }
-            return response.json();
-          })
-          .then(() => {
-            chrome.notifications.create({
-              type: "basic",
-              iconUrl: "icon.png",
-              title: "Transfer successful",
-              message: `The selection has been sent to ${targetUrl}`
-            });
-          })
-          .catch(error => {
-            console.error("Transmission error:", error);
-            chrome.notifications.create({
-              type: "basic",
-              iconUrl: "icon.png",
-              title: "Transmission error",
-              message: `Failed to send data: ${error.message}`
-            });
+        if (!clipboardText.trim()) {
+          chrome.notifications.create({
+            type: "basic",
+            iconUrl: "icon.png",
+            title: "Clipboard is empty",
+            message: "Please copy something before using this option."
           });
-      });
-    }); // <-- diese Klammer schließt executeScript
-  } // <-- diese Klammer schließt else if
-}); // <-- diese Klammer schließt onClicked
+          return;
+        }
+
+        chrome.storage.local.get(["targetUrl", "targetParams"], (data) => {
+          const targetUrl = data.targetUrl?.trim() || "http://localhost:5000/api/execute";
+          const targetParams = data.targetParams?.trim() || "command=create_entities";
+
+          sendToMcp({
+            content: clipboardText,
+            targetUrl,
+            targetParams,
+            sourceUrl: tab.url || ""
+          });
+        });
+      }
+    );
+  }
+
+  else if (info.menuItemId === "customEntry") {
+    chrome.windows.create({
+      url: "custom.html",
+      type: "popup",
+      width: 500,
+      height: 550
+    });
+  }
+});
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "customSubmit") {
+    sendToMcp({
+      content: message.content,
+      targetUrl: message.targetUrl,
+      targetParams: message.targetParams,
+      sourceUrl: sender?.url || ""
+    });
+    sendResponse({ status: "submitted" });
+    return true;
+  }
+});

@@ -4,10 +4,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const saveButton = document.getElementById('save');
   const closeButton = document.getElementById('close');
 
+  targetUrlInput.value = "http://localhost:5000/api/execute";
+  targetParamsInput.value = "command=create_entities";
+
   // Werte aus chrome.storage laden
   chrome.storage.local.get(['targetUrl', 'targetParams'], (result) => {
-    if (result.targetUrl) targetUrlInput.value = result.targetUrl?.trim() || "http://localhost:5000/api/execute";
-    if (result.targetParams) targetParamsInput.value = result.targetParams?.trim() || "command=create_entities";
+    if (result.targetUrl) targetUrlInput.value = result.targetUrl?.trim() || targetUrlInput.value;
+    if (result.targetParams) targetParamsInput.value = result.targetParams?.trim() || targetParamsInput.value;
   });
 
   // Speichern-Button-Handler
