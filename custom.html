@@ -51,13 +51,15 @@
   </div>
 
   <div class="mb-3">
-    <label for="param" class="form-label">Parameters</label>
-    <input
-      id="targetParams"
-      type="text"
-      class="form-control"
-      placeholder="Enter parameter"
-    />
+    <label for="targetParams" class="form-label">Parameters</label>
+    <select id="targetParams" class="form-select">
+      <option value="" selected disabled>Bitte Parameter wählen</option>
+      <option value="command=create_classes">command=create_classes</option>
+      <option value="command=create_entities">command=create_entities</option>
+      <option value="command=create_import">command=create_import</option>
+      <option value="command=create_htmlforms">command=create_htmlforms</option>
+      <option value="command=create_htmlpreview">command=create_htmlpreview</option>
+    </select>
   </div>
 
   <div class="form-buttons">
