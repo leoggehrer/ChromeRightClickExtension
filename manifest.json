@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "MCP Server",
+    "name": "TemplateTools Server",
     "version": "1.3",
-    "description": "Send selected text to a local MCP server via right-click with configurable settings",
+    "description": "Send selected text to a local TemplateTools Server via right-click with configurable settings",
     "permissions": [
         "contextMenus",
         "storage",

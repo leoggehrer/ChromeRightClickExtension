@@ -52,19 +52,19 @@ function sendToMcp({ content, targetUrl, targetParams, sourceUrl = "" }) {
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: "sendClipboardToMcp",
-    title: "➡️ Send Clipboard to MCP",
+    title: "➡️ Send Clipboard to TemplateTools",
     contexts: ["all"]
   });
 
   chrome.contextMenus.create({
     id: "customEntry",
-    title: "➡️ Customized send Clipboard to MCP",
+    title: "➡️ Customized send Clipboard to TemplateTools",
     contexts: ["all"]
   });
 
   chrome.contextMenus.create({
     id: "openOptions",
-    title: "⚙️ MCP Options",
+    title: "⚙️ TemplateTools Options",
     contexts: ["all"]
   });
 });
