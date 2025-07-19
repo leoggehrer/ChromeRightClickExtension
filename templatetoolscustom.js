@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const targetParams = targetParamsInput.value;
 
     chrome.runtime.sendMessage(
-      { action: 'customSubmit', content, targetUrl, targetParams },
+      { action: 'templateToolsCustomSubmit', content, targetUrl, targetParams },
       (response) => {
         if (chrome.runtime.lastError) {
           console.error('Error:', chrome.runtime.lastError.message);

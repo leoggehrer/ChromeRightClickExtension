@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Custom Request</title>
+  <title>TemplateTools Options</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- Bootstrap CDN -->
@@ -12,8 +12,12 @@
   <style>
     body {
       padding: 20px;
+      width: 100%;
       max-width: 500px;
-      margin: auto;
+    }
+
+    .form-control {
+      width: 100%;
     }
 
     .form-buttons {
@@ -28,20 +32,9 @@
   </style>
 </head>
 <body>
-  <h4 class="mb-4">🧾 Custom Request</h4>
+  <h4 class="mb-4">TemplateTools Options</h4>
 
   <div class="mb-3">
-    <label for="content" class="form-label">Clipboard Content</label>
-    <textarea
-      id="content"
-      class="form-control"
-      rows="5"
-      placeholder="Paste or auto-filled content from clipboard"
-    ></textarea>
-  </div>
-
-  <div class="mb-3">
-    <label for="param" class="form-label">Target URL</label>
     <input
       id="targetUrl"
       type="text"
@@ -63,10 +56,10 @@
   </div>
 
   <div class="form-buttons">
-    <button id="submit" class="btn btn-primary">Submit</button>
+    <button id="save" class="btn btn-primary">Save</button>
     <button id="close" class="btn btn-secondary">Close</button>
   </div>
 
-  <script src="custom.js"></script>
+  <script src="templatetoolsoptions.js"></script>
 </body>
 </html>

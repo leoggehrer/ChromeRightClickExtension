@@ -1,5 +1,5 @@
 
-function sendToMcp({ content, targetUrl, targetParams, sourceUrl = "" }) {
+function sendToServer({ content, targetUrl, targetParams, sourceUrl = "" }) {
   if (!targetUrl || !/^https?:\/\//.test(targetUrl)) {
     chrome.notifications.create({
       type: "basic",
@@ -26,60 +26,59 @@ function sendToMcp({ content, targetUrl, targetParams, sourceUrl = "" }) {
       "Content-Type": "application/json"
     },
     body: JSON.stringify(payload)
-  })
-    .then(response => {
-      if (!response.ok) throw new Error(`Server responded with ${response.status}`);
-      return response.json();
-    })
-    .then(() => {
-      chrome.notifications.create({
-        type: "basic",
-        iconUrl: "icon.png",
-        title: "Transfer successful",
-        message: `Clipboard content sent to ${targetUrl}`
-      });
-    })
-    .catch(error => {
-      chrome.notifications.create({
-        type: "basic",
-        iconUrl: "icon.png",
-        title: "Error sending data",
-        message: `Error: ${error.message}`
-      });
+  }).then(response => {
+    if (!response.ok)
+      throw new Error(`Server responded with ${response.status}`);
+
+    return response.json();
+  }).then(() => {
+    chrome.notifications.create({
+      type: "basic",
+      iconUrl: "icon.png",
+      title: "Transfer successful",
+      message: `Clipboard content sent to ${targetUrl}`
     });
+  }).catch(error => {
+    chrome.notifications.create({
+      type: "basic",
+      iconUrl: "icon.png",
+      title: "Error sending data",
+      message: `Error: ${error.message}`
+    });
+  });
 }
 
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
-    id: "sendClipboardToMcp",
+    id: "sendClipboardToServer",
     title: "➡️ Send Clipboard to TemplateTools",
     contexts: ["all"]
   });
 
   chrome.contextMenus.create({
-    id: "customEntry",
+    id: "openTemplateToolsCustom",
     title: "➡️ Customized send Clipboard to TemplateTools",
     contexts: ["all"]
   });
 
   chrome.contextMenus.create({
-    id: "openOptions",
+    id: "openTemplateToolsOptions",
     title: "⚙️ TemplateTools Options",
     contexts: ["all"]
   });
 });
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId === "openOptions") {
+  if (info.menuItemId === "openTemplateToolsOptions") {
     chrome.windows.create({
-      url: chrome.runtime.getURL("options.html"),
+      url: chrome.runtime.getURL("templatetoolsoptions.html"),
       type: "popup",
       width: 500,
-      height: 300
+      height: 330
     });
   }
 
-  else if (info.menuItemId === "sendClipboardToMcp") {
+  else if (info.menuItemId === "sendClipboardToServer") {
     chrome.scripting.executeScript(
       {
         target: { tabId: tab.id },
@@ -117,7 +116,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
           const targetUrl = data.targetUrl?.trim() || "http://localhost:5000/api/execute";
           const targetParams = data.targetParams?.trim() || "command=create_entities";
 
-          sendToMcp({
+          sendToServer({
             content: clipboardText,
             targetUrl,
             targetParams,
@@ -128,9 +127,9 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     );
   }
 
-  else if (info.menuItemId === "customEntry") {
+  else if (info.menuItemId === "openTemplateToolsCustom") {
     chrome.windows.create({
-      url: "custom.html",
+      url: "templatetoolscustom.html",
       type: "popup",
       width: 500,
       height: 550
@@ -139,8 +138,8 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === "customSubmit") {
-    sendToMcp({
+  if (message.action === "templateToolsCustomSubmit") {
+    sendToServer({
       content: message.content,
       targetUrl: message.targetUrl,
       targetParams: message.targetParams,
