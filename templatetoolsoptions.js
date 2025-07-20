@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeButton = document.getElementById('close');
 
   targetUrlInput.value = "http://localhost:5000/api/execute";
-  targetParamsInput.value = "command=create_classes";
+  targetParamsInput.value = "command=import_cs_items";
 
   // Werte aus chrome.storage laden
   chrome.storage.local.get(['targetUrl', 'targetParams'], (result) => {

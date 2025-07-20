@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const submitButton = document.getElementById('submit');
 
   targetUrlInput.value = "http://localhost:5000/api/execute";
-  targetParamsInput.value = "command=create_classes";
+  targetParamsInput.value = "command=import_cs_items";
 
   // Werte aus chrome.storage laden
   chrome.storage.local.get(['customTargetUrl', 'customTargetParams'], (result) => {
